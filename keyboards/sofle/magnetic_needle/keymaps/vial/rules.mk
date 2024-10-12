@@ -22,4 +22,4 @@ CONVERT_TO = promicro_rp2040
 
 VIA_ENABLE = yes
 VIAL_ENABLE = yes
-VIALRGB_ENABLE = no
+VIALRGB_ENABLE = yes

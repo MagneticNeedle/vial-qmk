@@ -6,7 +6,7 @@
     "diode_direction": "COL2ROW",
     "features": {
         "bootmagic": true,
-        "combo": false,
+        "combo": true,
         "command": false,
         "console": true,
         "encoder": true,
@@ -59,6 +59,9 @@
                     {"pin_a": "F4", "pin_b": "F5", "resolution": 2}
                 ]
             }
+        },
+        "usb_detect": {
+            "enabled": true
         }
     },
     "ws2812": {

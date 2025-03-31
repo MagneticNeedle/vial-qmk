@@ -1,1 +1,2 @@
 CONVERT_TO = promicro_rp2040
+VIAL_INSECURE = yes

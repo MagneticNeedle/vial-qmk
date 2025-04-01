@@ -22,7 +22,10 @@
 #include "led.h"
 #include "oled_driver.h"
 #include "progmem.h"
+#define OLED_LAYER_SIZE 512
+
 #ifdef OLED_ENABLE
+#include "oled_layers.h"
 
 static void render_logo(void) {
     static const char PROGMEM qmk_logo[] = {
@@ -34,41 +37,36 @@ static void render_logo(void) {
     oled_write_P(qmk_logo, false);
 }
 
-static void print_status_narrow(void) {
-    // Print current mode
-    oled_write_P(PSTR("\n\n"), false);
+// static void render_code_layer(void) {
+//     oled_write_raw_P(CODE_LAYER_NO_CAPS, sizeof(CODE_LAYER_NO_CAPS));
+// };
 
-    switch (get_highest_layer(layer_state)) {
+static void render_layer(const char *image_data) {
+    oled_write_raw_P(image_data, OLED_LAYER_SIZE);
+};
+
+static void print_status(void) {
+    int highest_layer = get_highest_layer(layer_state);
+    led_t led_usb_state = host_keyboard_led_state();
+    bool is_caps_lock_on = led_usb_state.caps_lock;
+    const char* image_to_show = UNDEF_LAYER;
+
+    switch (highest_layer) {
         case 0:
-            oled_write_ln_P(PSTR("Qwrt"), false);
+            image_to_show = is_caps_lock_on ? CODE_LAYER_CAPS : CODE_LAYER_NO_CAPS;
             break;
         case 1:
-            oled_write_ln_P(PSTR("Clmk"), false);
-            break;
-        default:
-            oled_write_P(PSTR("Mod\n"), false);
-            break;
-    }
-    oled_write_P(PSTR("\n\n"), false);
-    // Print current layer
-    oled_write_ln_P(PSTR("LAYER"), false);
-    switch (get_highest_layer(layer_state)) {
-        case 0:
-        case 1:
-            oled_write_P(PSTR("Base\n"), false);
+            image_to_show = is_caps_lock_on ? GAME_LAYER_CAPS : GAME_LAYER_NO_CAPS;
             break;
         case 2:
-            oled_write_P(PSTR("Raise"), false);
+            image_to_show = is_caps_lock_on ? SYM_LAYER_CAPS : SYM_LAYER_NO_CAPS;
             break;
         case 3:
-            oled_write_P(PSTR("Lower"), false);
+            image_to_show = is_caps_lock_on ? ALT_LAYER_CAPS : ALT_LAYER_NO_CAPS;
             break;
-        default:
-            oled_write_ln_P(PSTR("Undef"), false);
     }
-    oled_write_P(PSTR("\n\n"), false);
-    led_t led_usb_state = host_keyboard_led_state();
-    oled_write_ln_P(PSTR("CPSLK"), led_usb_state.caps_lock);
+
+    render_layer(image_to_show);
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
@@ -80,7 +78,7 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
-        print_status_narrow();
+        print_status();
     } else {
         render_logo();
     }

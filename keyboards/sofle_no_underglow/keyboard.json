@@ -51,7 +51,8 @@
         "transport": {
             "sync": {
                 "matrix_state": true
-            }
+            },
+            "watchdog": true
         },
         "encoder": {
             "right": {
